@@ -32,8 +32,21 @@ pipeline {
         stage('Health Check') {
             steps {
                 sh '''
-                    sleep 10
-                    curl -f http://localhost:8082/actuator/health
+                    for i in {1..12}
+                    do
+                        echo "Health check denemesi: $i"
+
+                        if curl -f http://localhost:8082/actuator/health; then
+                            echo "Uygulama hazır!"
+                            exit 0
+                        fi
+
+                        sleep 5
+                    done
+
+                    echo "Uygulama sağlık kontrolünden geçemedi."
+                    docker logs demo-app-container
+                    exit 1
                 '''
             }
         }
