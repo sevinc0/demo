@@ -32,30 +32,36 @@ pipeline {
         stage('Health Check') {
             steps {
                 sh '''
-                    i=1
+                    echo "Uygulamanın başlaması bekleniyor..."
 
-                    while [ $i -le 12 ]
+                    for i in {1..18}
                     do
-                        echo "Health check denemesi: $i"
+                        echo "Health check denemesi: $i/18"
 
-                        if curl -f http://127.0.0.1:8082/actuator/health; then
-                            echo "Uygulama hazır!"
+                        if curl -f http://localhost:8082/actuator/health; then
+                            echo ""
+                            echo "Uygulama başarıyla çalışıyor!"
                             exit 0
                         fi
 
-                        echo "Uygulama henüz hazır değil, 5 saniye bekleniyor..."
                         sleep 5
-
-                        i=$((i + 1))
                     done
 
                     echo "Uygulama sağlık kontrolünden geçemedi."
-                    echo "Container logları:"
                     docker logs demo-app-container
-
                     exit 1
                 '''
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline başarıyla tamamlandı!'
+        }
+
+        failure {
+            echo 'Pipeline başarısız oldu.'
         }
     }
 }
