@@ -34,7 +34,7 @@ pipeline {
                 sh '''
                     echo "Uygulamanın başlaması bekleniyor..."
 
-                    for i in {1..18}
+                    for i in $(seq 1 18)
                     do
                         echo "Health check denemesi: $i/18"
 
